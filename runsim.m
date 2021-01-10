@@ -9,11 +9,6 @@ addpath('utils')
 addpath('trajectories')
 
 init_script;
-
-
-
-
-
 % controller
 controlhandle = @controller;
 

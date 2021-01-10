@@ -24,7 +24,7 @@ persistent path0 total_time X ts;
 if numel(t) == 0 
    path0 = path(:,2:end-1);
    [ts, total_time] = generate_ts(path0,speed);
-   X = traj_opt7(path0, total_time,ts);
+   X = traj_opt3(path0, total_time,ts);
    return
 end
 
@@ -38,13 +38,19 @@ if t >= total_time
     vel = [0;0;0];
     acc = [0;0;0];
 else
-
-    % 7th order minimum snap trajectory
+    
+%3rd order trajectory planning
     k = find(ts<=t);
     k = k(end);
-    pos = [t^7, t^6, t^5, t^4, t^3, t^2, t, 1]*X(8*(k-1)+1:8*k,:);
-    vel = [7*t^6, 6*t^5, 5*t^4, 4*t^3, 3*t^2, 2*t, 1, 0]*X(8*(k-1)+1:8*k,:);
-    acc = [42*t^5, 30*t^4, 20*t^3, 12*t^2, 6*t, 2, 0, 0]*X(8*(k-1)+1:8*k,:);
+    pos = [t^3, t^2, t, 1]*X(4*(k-1)+1:4*k,:);
+    vel = [3*t^2, 2*t, 1, 0]*X(4*(k-1)+1:4*k,:);
+    acc = [6*t, 2, 0, 0]*X(4*(k-1)+1:4*k,:);
+% 7th order minimum snap trajectory
+%     k = find(ts<=t);
+%     k = k(end);
+%     pos = [t^7, t^6, t^5, t^4, t^3, t^2, t, 1]*X(8*(k-1)+1:8*k,:);
+%     vel = [7*t^6, 6*t^5, 5*t^4, 4*t^3, 3*t^2, 2*t, 1, 0]*X(8*(k-1)+1:8*k,:);
+%     acc = [42*t^5, 30*t^4, 20*t^3, 12*t^2, 6*t, 2, 0, 0]*X(8*(k-1)+1:8*k,:);
 end
 
 yaw = 0;
