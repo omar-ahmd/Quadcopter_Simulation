@@ -3,9 +3,8 @@
 % You should not modify any part of this script except for the
 % visualization part
 
+global qn;
 function [QP] = Simulate(h_3d,trajhandle,qn,Data,Speed,opt)
-
-
 addpath('utils')
 addpath('trajectories')
 
@@ -18,7 +17,7 @@ real_time = true;
 
 % *********** YOU SHOULDN'T NEED TO CHANGE ANYTHING BELOW **********
 % number of quadrotors
-
+nquad = 1;
 
 % max time
 time_tol = 25;
@@ -27,7 +26,7 @@ time_tol = 25;
 params = crazyflie();
 
 %% **************************** FIGURES *****************************
-quadcolors = lines(qn);
+quadcolors = lines(nquad);
 %% *********************** INITIAL CONDITIONS ***********************
 
 max_iter  = 5000;      % max iteration
@@ -56,11 +55,11 @@ vel_tol   = 0.01;
 %% ************************* RUN SIMULATION *************************
 % Main loop
 for iter = 1:max_iter
-
+    
     
 %     title(h_3d,sprintf('iteration: %d, time: %4.2f', iter, time));
     tic;
-
+    qn=1;
     timeint = time:tstep:time+cstep;
         % Initialize quad plot
     if iter == 1
@@ -102,10 +101,11 @@ for iter = 1:max_iter
     end
 
     % Check termination criteria
-    if terminate_check(x, time, stop, pos_tol, vel_tol, time_tol,qn)
+    if terminate_check(x, time, stop, pos_tol, vel_tol, time_tol)
         break
     end
 end
 fprintf('finished.\n')
+end
 
 

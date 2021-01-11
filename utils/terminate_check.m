@@ -1,18 +1,18 @@
-function [ terminate_cond ] = terminate_check( x, time, stop, pos_tol, vel_tol, time_tol)
+function [ terminate_cond ] = terminate_check( x, time, stop, pos_tol, vel_tol, time_tol,qn)
 %TERMINATE_CHECK Check termination criteria, including position, velocity and time
 nquad = length(stop);
 
 % Initialize
 pos_check = true;
 vel_check = true;
-pos_col_check = zeros(nquad, 3);
+pos_col_check = zeros(1,3);
 
 % Check position and velocity and still time for each quad
-for qn = 1:nquad
+
     pos_check = pos_check && (norm(x{qn}(1:3) - stop{qn}) < pos_tol);
     vel_check = vel_check && (norm(x{qn}(4:6)) < vel_tol);
-    pos_col_check(qn,:) = x{qn}(1:3)';
-end
+    pos_col_check(:) = x{qn}(1:3)';
+
 
 % Check total simulation time
 time_check = time > time_tol;
