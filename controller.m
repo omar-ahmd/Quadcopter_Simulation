@@ -7,7 +7,7 @@ function [F, M, trpy, drpy] = controller(qd, t, qn, params)
 % Using these current and desired states, you have to compute the desired controls
 
 % position controller params
-Kp = [10;10;30];
+Kp = [15;15;30];
 Kd = [12;12;10];
 
 % attitude controller params
@@ -29,7 +29,9 @@ F  = params.mass*(params.grav + acc_des(3));
 % Moment
 M =  params.I*(KdM.*(pqr_des - qd{qn}.omega) + KpM.*(euler_des - qd{qn}.euler));
 % =================== Your code ends here ===================
-
+if F>params.maxF
+    F = params.maxF;
+end
 % Output trpy and drpy as in hardware
 trpy = [F, phi_des, theta_des, psi_des];
 drpy = [0, 0,       0,         0];

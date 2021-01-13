@@ -3,28 +3,25 @@
 % You should not modify any part of this script except for the
 % visualization part
 
-function [QP] = Simulate(h_3d,trajhandle,qn,Data,Speed,opt)
+function [QP] = Simulate(h_3d,trajhandle,qn,Data,Speed,opt,params)
 
 
 addpath('utils')
 addpath('trajectories')
-
-init_script;
+try
+    init_script;
+catch
+end
 % controller
 controlhandle = @controller;
 
 % real-time 
 real_time = true;
 
-% *********** YOU SHOULDN'T NEED TO CHANGE ANYTHING BELOW **********
-% number of quadrotors
-
-
 % max time
 time_tol = 25;
 
-% parameters for simulation
-params = crazyflie();
+
 
 %% **************************** FIGURES *****************************
 quadcolors = lines(qn);
@@ -44,8 +41,7 @@ des_stop  = trajhandle(inf, qn,Data,Speed,opt);
 stop{qn}  = des_stop.pos;
 
 x0{qn}    = init_state( des_start.pos, 0 );
-xtraj{qn} = zeros(max_iter*nstep, length(x0{qn}));
-ttraj{qn} = zeros(max_iter*nstep, 1);
+
 
 
 x         = x0;        % state
@@ -58,15 +54,10 @@ vel_tol   = 0.01;
 for iter = 1:max_iter
 
     
-%     title(h_3d,sprintf('iteration: %d, time: %4.2f', iter, time));
-    tic;
 
     timeint = time:tstep:time+cstep;
-        % Initialize quad plot
     if iter == 1
-        
-        QP{qn} = QuadPlot(qn, x0{qn}, 0.1, 0.04, quadcolors(qn,:), max_iter, h_3d);
-        
+        QP{qn} = QuadPlot(qn, x0{qn}, params.arm_length, 0.046, quadcolors(qn,:), max_iter, h_3d);
         desired_state = trajhandle(time, qn, Data,Speed,opt);
         QP{qn}.UpdateQuadPlot(x{qn}, [desired_state.pos; desired_state.vel], time); 
     end
@@ -76,30 +67,18 @@ for iter = 1:max_iter
     % Run simulation
     [tsave, xsave] = ode45(FV , timeint, x{qn});
     x{qn}    = xsave(end, :)';
-        
-    % Save to traj
-    xtraj{qn}((iter-1)*nstep+1:iter*nstep,:) = xsave(1:end-1,:);
-    ttraj{qn}((iter-1)*nstep+1:iter*nstep) = tsave(1:end-1);
+
 
     % Update quad plot
-    tt =time + cstep;
-    desired_state = trajhandle(tt, qn,Data,Speed,opt);
+    t =time + cstep;
+    desired_state = trajhandle(t, qn,Data,Speed,opt);
+    
     hold(h_3d,'on')
-    QP{qn}.UpdateQuadPlot(x{qn}, [desired_state.pos; desired_state.vel], tt);
+    QP{qn}.UpdateQuadPlot(x{qn}, [desired_state.pos; desired_state.vel], t);
     hold(h_3d,'off')   
 
     time = time + cstep; % Update simulation time
-    t = toc;
-    % Check to make sure ode45 is not timing out
-%     if(t> cstep*50)
-%         err = 'Ode45 Unstable';
-%         break;
-%     end
 
-    % Pause to make real-time
-    if real_time && (t < cstep)
-        pause(cstep - t);
-    end
 
     % Check termination criteria
     if terminate_check(x, time, stop, pos_tol, vel_tol, time_tol,qn)
