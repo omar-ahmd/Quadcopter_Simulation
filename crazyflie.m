@@ -6,7 +6,7 @@ g = 9.81;   % gravitational constant
 I = [1.43e-5,   0,          0; % inertial tensor in m^2 kg
      0,         1.43e-5,    0;
      0,         0,          2.89e-5];
-L = 1; % arm length in m
+L = 0.225; % arm length in m
 
 
 params.I    = I;
@@ -14,7 +14,7 @@ params.invI = inv(I);
 params.grav = g;
 params.arm_length = L;
 
-params.maxangle = 40*pi/180; % you can specify the maximum commanded angle here
+params.maxangle = 85*pi/180; % you can specify the maximum commanded angle here
 
 params.minF     = 0.05*m*g;  % left these untouched from the nano plus
 

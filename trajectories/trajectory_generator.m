@@ -42,7 +42,7 @@ yaw = 0;
 yawdot = 0;
 
 % =================== Your code ends here ===================
-
+desired_state.ten = total_time;
 desired_state.pos = pos(:);
 desired_state.vel = vel(:);
 desired_state.acc = acc(:);

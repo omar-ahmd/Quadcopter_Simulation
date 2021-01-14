@@ -50,8 +50,11 @@ quat = [qW; qX; qY; qZ];
 bRw = QuatToRot(quat);
 wRb = bRw';
 
+
+%Aerodynamical effect
+A = 1/params.mass * [params.Ax 0 0;0 params.Ay 0;0 0 params.Az] * [xdot; ydot; zdot];
 % Acceleration
-accel = 1 / params.mass * (wRb * [0; 0; F] - [0; 0; params.mass * params.grav]);
+accel = 1 / params.mass * (real(wRb) * [0; 0; F] - [0; 0; params.mass * params.grav]) - A;
 
 % Angular velocity
 K_quat = 2; %this enforces the magnitude 1 constraint for the quaternion
