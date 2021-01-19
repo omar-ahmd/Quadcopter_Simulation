@@ -42,7 +42,7 @@ if strcmp(view, 'sep')
 elseif strcmp(view, '3d')
     
     % Plot 3d
-    axis square
+    axis equal
     hold on
     plot3(state(1,:), state(2,:), state(3,:), line_color, 'LineWidth', line_width)
     hold off

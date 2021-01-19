@@ -1,4 +1,4 @@
-function [desired_state] = diamond(t, qn,Data,s,o)
+function [desired_state] = diamond(t, qn,Data,s,o,d)
 % DIAMOND trajectory generator for a diamond
 
 % =================== Your code goes here ===================

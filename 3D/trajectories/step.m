@@ -1,4 +1,4 @@
-function [desired_state] = step(t, qn,Data,s,o)
+function [desired_state] = step(t, qn,Data,s,o,d)
 % Hover trajectory generator for a circle
 
 % =================== Your code goes here ===================

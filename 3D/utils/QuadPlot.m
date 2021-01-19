@@ -115,10 +115,13 @@ classdef QuadPlot < handle
 
         % Update quad plot
         function UpdateQuadPlot(Q, state, des_state, time)
+            
             Q.UpdateQuadState(state, time);
+            
             Q.UpdateDesiredQuadState(des_state);
             Q.UpdateQuadHist();
             Q.UpdateMotorPos();
+            
             set(Q.h_m13, ...
                 'XData', Q.motor(1,[1 3]), ...
                 'YData', Q.motor(2,[1 3]), ...
