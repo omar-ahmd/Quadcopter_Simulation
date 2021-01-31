@@ -1,17 +1,29 @@
-function sdot = quadEOM_readonly(t, s, F, M, params,dimension)
-A = [0.25,                      0, -0.5/params.arm_length;
-     0.25,  0.5/params.arm_length,                      0;
-     0.25,                      0,  0.5/params.arm_length;
-     0.25, -0.5/params.arm_length,                      0];
-    prop_thrusts = A*[F;M(1:2)]; % Not using moment about Z-axis for limits
-    prop_thrusts_clamped = max(min(prop_thrusts, params.maxF/4), params.minF/4);
+function sdot= quadEOM_readonly(t, s, F, M, params,dimension,qn)
+A = [0.25,  0  , -0.5,  0.25;
+     0.25,  0.5,  0  , -0.25;
+     0.25,  0  ,  0.5,  0.25;
+     0.25, -0.5,  0  , -0.25];
 
-    B = [                 1,                 1,                 1,                  1;
-                          0, params.arm_length,                 0, -params.arm_length;
-         -params.arm_length,                 0, params.arm_length,                 0];
-    F = B(1,:)*prop_thrusts_clamped;
-    M = [B(2:3,:)*prop_thrusts_clamped; M(3)]; 
-    
+prop_thrusts = A*[F ; M(1)/params.arm_length ; M(2)/params.arm_length ; 21*M(3)]; %Kf/Km = 21
+a=min(prop_thrusts, params.maxF/4);
+prop_thrusts_clamped = max(a, params.minF/4);
+
+B = [                 1,                 1,                 1,                  1;
+                  0, params.arm_length,                 0, -params.arm_length;
+ -params.arm_length,                 0, params.arm_length,                 0];
+
+F = B(1,:)*prop_thrusts_clamped;
+FF=(sqrt(prop_thrusts_clamped))';
+if qn==1
+    assignin('base','F1',FF)
+end
+if qn==2
+    assignin('base','F2',FF)
+end
+
+%     assignin('base','F.qn',(10*sqrt(prop_thrusts_clamped)));
+M = [B(2:3,:)*prop_thrusts_clamped; M(3)];
+
 % Assign states
 x = s(1);
 y = s(2);
@@ -43,30 +55,33 @@ elseif dimension == 2
     accel = 1 / params.mass * (wRb * [0; 0; F] - [0; 0; params.mass * params.grav]);
 
 end
-    % Angular velocity
-    K_quat = 2; %this enforces the magnitude 1 constraint for the quaternion
-    quaterror = 1 - (qW^2 + qX^2 + qY^2 + qZ^2);
-    qdot = -1/2*[0, -p, -q, -r;...
-                 p,  0, -r,  q;...
-                 q,  r,  0, -p;...
-                 r, -q,  p,  0] * quat + K_quat*quaterror * quat;
+% Angular velocity
+K_quat = 2; %this enforces the magnitude 1 constraint for the quaternion
+quaterror = 1 - (qW^2 + qX^2 + qY^2 + qZ^2);
+qdot = -1/2*[0, -p, -q, -r;...
+             p,  0, -r,  q;...
+             q,  r,  0, -p;...
+             r, -q,  p,  0] * quat + K_quat*quaterror * quat;
 
-    % Angular acceleration
-    omega = [p;q;r];
-    pqrdot   = params.invI * (M - cross(omega, params.I*omega));
-    % Assemble sdot
-    sdot = zeros(13,1);
-    sdot(1)  = xdot;
-    sdot(2)  = ydot;
-    sdot(3)  = zdot;
-    sdot(4)  = accel(1);
-    sdot(5)  = accel(2);
-    sdot(6)  = accel(3);
-    sdot(7)  = qdot(1);
-    sdot(8)  = qdot(2);
-    sdot(9)  = qdot(3);
-    sdot(10) = qdot(4);
-    sdot(11) = pqrdot(1);
-    sdot(12) = pqrdot(2);
-    sdot(13) = pqrdot(3);
+% Angular acceleration
+omega = [p;q;r];
+
+pqrdot   = params.invI * (M - cross(omega, params.I*omega));
+
+
+% Assemble sdot
+sdot = zeros(13,1);
+sdot(1)  = xdot;
+sdot(2)  = ydot;
+sdot(3)  = zdot;
+sdot(4)  = accel(1);
+sdot(5)  = accel(2);
+sdot(6)  = accel(3);
+sdot(7)  = qdot(1);
+sdot(8)  = qdot(2);
+sdot(9)  = qdot(3);
+sdot(10) = qdot(4);
+sdot(11) = pqrdot(1);
+sdot(12) = pqrdot(2);
+sdot(13) = pqrdot(3);
 end

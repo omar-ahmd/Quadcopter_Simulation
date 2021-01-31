@@ -83,8 +83,7 @@ for iter = 1:max_iter
         end
     end
         Data=evalin('base', 'Data')
-%     Data=evalin('base', 'Data');
-    %    title(h_3d,sprintf('iteration: %d, time: %4.2f', iter, time));
+
     tic;
     
     timeint = time:tstep:time+cstep;
@@ -115,14 +114,8 @@ for iter = 1:max_iter
     time = time + cstep; % Update simulation time
     t = toc;
     
-    % Pause to make real-time
-    if real_time && (t < cstep)
-        pause(cstep - t);
-    end
+
     
-    % Check termination criteria
-    %     if terminate_check(x, time, stop, pos_tol, vel_tol, time_tol,qn)
-    %         break
-    %     end
+ 
 end
 fprintf('finished.\n')

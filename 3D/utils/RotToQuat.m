@@ -1,10 +1,5 @@
 function q = RotToQuat(R)
-%ROTTOQUAT Converts a Rotation matrix into a Quaternion
-%   written by Daniel Mellinger
-%   from the following website, deals with the case when tr<0
-%   http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/index.htm
 
-%takes in W_R_B rotation matrix
 
 tr = R(1,1) + R(2,2) + R(3,3);
 
